@@ -1,41 +1,27 @@
 const express = require('express');
-const mysql = require('mysql2');
+const fs = require('fs');
+const path = require('path');
+const db = require('./db');
+
+
 const app = express();
+app.use(express.json());
 
- const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'Vinay5559',
-    database: 'testdb'
-})
+const initDB = async () => {
+    try {
+        const schemaPath = path.join(__dirname, 'schema.sql');
+        const schemaSql = fs.readFileSync(schemaPath, 'utf8');
 
-connection.connect((err) => {
-    if(err){
-        console.log(err);
-        return;
+        await db.query(schemaSql);
+        console.log('Database table Verified/Created from schema.sql successfully.');
+    } catch (error) {
+        console.error('Error initializing schema:', error.message);
     }
-    console.log("Connection has been created");
+};
 
-    const creationQuery = `create table STudents (
-    id INT PRIMARY KEY,
-    name VARCHAR(20),
-    email VARCHAR(20)
-    )`
+initDB();
 
-    connection.execute(creationQuery, (err) => {
-        if(err) {
-            console.log(err);
-            connection.end();
-            return;
-        }
-        console.log("Table is created");
-    })
-})
-
-app.get('/', (req, res) => {
-    res.send('Hello world');
-})
-
-app.listen(3000, (err) => {
-    console.log("Server is running");
-})
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
