@@ -8,5 +8,5 @@ const pool = mysql.createPool({
     database: process.env.DB_NAME || 'bus_booking_db',
     multipleStatements: true
 });
-
+   
 module.exports = pool.promise();

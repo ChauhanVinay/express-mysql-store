@@ -1,11 +1,15 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const db = require('./db');
+const db = require('./config/db');
 
 
 const app = express();
 app.use(express.json());
+
+//Route imports
+const userRoutes = require('./routes/userRoutes');
+const busRoutes = require('./routes/busRoutes');
 
 const initDB = async () => {
     try {
@@ -20,6 +24,10 @@ const initDB = async () => {
 };
 
 initDB();
+
+//Mount endpoints
+app.use('/users', userRoutes);
+app.use('/buses', busRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
