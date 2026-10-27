@@ -1,26 +1,28 @@
-const db = require('../config/db');
+const { Op } = require('sequelize');
+const Bus = require('../models/Bus');
 
-//POST /buses - Add a new bus
+//POST /buses - Insert bus using Sequelize create()
 exports.createBus = async (req, res) => {
     try {
 
    const {busNumber, totalSeats, availableSeats} = req.body;
+   if (!busNumber || totalSeats == undefined || availableSeats == undefined) {
+    return res.status(400).json({error: 'busNumber, totalSeats, and availableSeats are required'});
+   }
 
-   const query = 'INSERT INTO Buses (busNumber, totalSeats, availableSeats) VALUES (?, ?, ?)';
-   const [result] = await db.execute(query, [busNumber, totalSeats, availableSeats]);
+   const newBus = await Bus.create({ busNumber, totalSeats, availableSeats});
 
    res.status(201).json({
     message: 'Bus created successfully',
-    bus: {id: result.insertId, busNumber, totalSeats, availableSeats}
+    data: newBus
    });
 
     } catch(error) {
-        console.error('Error creating bus:', error.message);
         res.status(500).json({ error: error.message})
     }
 };
 
-// GET /buses/available/:seats - Retrieve all buses with available seatd
+// GET /buses/available/:seats - Retrieve all buses with available seat > :seats
 exports.getAvailableBuses = async (req, res) => {
     try {
 
@@ -30,17 +32,20 @@ exports.getAvailableBuses = async (req, res) => {
          return res.status(400).json({ error: 'Seat must be valid'});
         }
 
-    const query = 'SELECT * FROM Buses WHERE availableSeats > ?';
-    const [buses] = await db.execute(query, [minSeats]); 
-    
+      const buses = await Bus.findAll({
+        where: {
+            availableSeats: {
+                [Op.gt]: minSeats
+            }
+        }
+      });
+
     res.status(200).json({
-      message: `Buses with more than ${minSeats} available seats`,
       count: buses.length,
       data: buses
     });
 
     } catch (error) {
-        console.error('Error fetching available buses:', error.message);
         res.status(500).json({error: error.message});
     }
 };

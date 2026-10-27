@@ -1,35 +1,36 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
-const db = require('./config/db');
+const sequelize = require('./config/db');
 
 
-const app = express();
-app.use(express.json());
+//Import all 4 models
+require('./models/User');
+require('./models/Bus');
+require('./models/Booking');
+require('./models/Payment');
+
 
 //Route imports
 const userRoutes = require('./routes/userRoutes');
 const busRoutes = require('./routes/busRoutes');
 
-const initDB = async () => {
-    try {
-        const schemaPath = path.join(__dirname, 'schema.sql');
-        const schemaSql = fs.readFileSync(schemaPath, 'utf8');
+const app = express();
+app.use(express.json());
 
-        await db.query(schemaSql);
-        console.log('Database table Verified/Created from schema.sql successfully.');
-    } catch (error) {
-        console.error('Error initializing schema:', error.message);
-    }
-};
-
-initDB();
 
 //Mount endpoints
 app.use('/users', userRoutes);
 app.use('/buses', busRoutes);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+
+sequelize
+    .sync({ alter: true })
+    .then(() => {
+        console.log('Database synced successfully with all 4 models.');
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
+    })
+    .catch((err) => {
+        console.error('Failed to sync databse:', err.message);
+    });
