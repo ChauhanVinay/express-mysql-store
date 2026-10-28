@@ -5,5 +5,6 @@ const busController = require('../controllers/busController');
 
 router.post('/', busController.createBus);
 router.get('/available/:seats', busController.getAvailableBuses);
+router.get('/:id/bookings', busController.getBusBooking);
 
-module.exports = router;
+module.exports = router;  

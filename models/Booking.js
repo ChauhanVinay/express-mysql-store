@@ -14,6 +14,6 @@ const Booking = sequelize.define('Booking', {
     }
 }, {
     timestamps: false  
-});
+});   
 
 module.exports = Booking;

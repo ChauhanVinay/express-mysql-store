@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const { User, Booking, Bus } = require('../models');
 
 //POST /users - Insert user using Sequelize create()
 exports.createUser = async (req, res) => {
@@ -12,7 +12,7 @@ exports.createUser = async (req, res) => {
     res.status(201).json({
     message: "User created successfully",
     data: newUser
-   });
+   });   
       
     } catch(error) {
         res.status(500).json({ error: error.message});
@@ -28,3 +28,26 @@ exports.getAllUsers = async (req, res) => {
         res.status(500).json({ error: error.message});
     }
 };
+
+// GET /users/:id/booking - Bookings for a user including bus details
+exports.getUserBookings = async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const bookings = await Booking.findAll({
+        where: { userId: id },
+        attributes: ['id', 'seatNumber'],
+        include: [
+            {
+                model: Bus,
+                as: 'bus',
+                attributes: ['busNumber']
+            }
+        ]
+
+      });
+    res.status(200).json(bookings);   
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}

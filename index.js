@@ -1,17 +1,12 @@
 const express = require('express');
 const sequelize = require('./config/db');
+require('./models');
 
-
-//Import all 4 models
-require('./models/User');
-require('./models/Bus');
-require('./models/Booking');
-require('./models/Payment');
-
-
+  
 //Route imports
 const userRoutes = require('./routes/userRoutes');
 const busRoutes = require('./routes/busRoutes');
+const bookingRoutes = require('./routes/bookingRoutes');
 
 const app = express();
 app.use(express.json());
@@ -20,6 +15,7 @@ app.use(express.json());
 //Mount endpoints
 app.use('/users', userRoutes);
 app.use('/buses', busRoutes);
+app.use('/bookings', bookingRoutes);
 
 const PORT = process.env.PORT || 3000;
 

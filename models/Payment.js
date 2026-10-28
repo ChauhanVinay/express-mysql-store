@@ -15,7 +15,7 @@ const Payment = sequelize.define('Payment', {
     paymentStatus: {
         type: DataTypes.STRING,
         allowNull: false
-    }
+    }  
 }, {
     timestamps: false  
 });

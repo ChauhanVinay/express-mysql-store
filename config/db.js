@@ -10,6 +10,6 @@ const sequelize = new Sequelize(
         host: process.env.DB_HOST || 'localhost',
         logging: console.log
     }
-);
+);  
 
 module.exports = sequelize;

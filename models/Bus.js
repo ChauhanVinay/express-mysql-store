@@ -12,7 +12,7 @@ const Bus = sequelize.define('Bus', {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
-    },
+    },  
     totalSeats: {
         type: DataTypes.INTEGER,
         allowNull: false
